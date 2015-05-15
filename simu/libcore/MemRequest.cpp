@@ -128,12 +128,13 @@ void MemRequest::setStateAckDone(TimeDelta_t lat)
   }
 }
 
-MemRequest *MemRequest::create(MemObj *mobj, AddrType addr, bool doStats, CallbackBase *cb)
+MemRequest *MemRequest::create(MemObj *mobj, AddrType addr, AddrType pc, bool doStats, CallbackBase *cb)
 {
 
   I(mobj);
 
   MemRequest *r = actPool.out();
+  r->pc = pc;
 
   r->addr        = addr;
   r->homeMemObj  = mobj;

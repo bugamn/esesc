@@ -226,11 +226,11 @@ void FetchEngine::realfetch(IBucket *bucket, EmulInterface *eint, FlowID fid, in
 #if 1
     if (!dinst->getStatsFlag() && dinst->getPC() == 0) {
       if (dinst->getInst()->isLoad()) {
-        MemRequest::sendReqReadWarmup(gms->getDL1(), dinst->getAddr());
+        MemRequest::sendReqReadWarmup(gms->getDL1(), dinst->getAddr(), dinst->getPC());
         dinst->scrap(eint);
         dinst = 0;
       } else if (dinst->getInst()->isStore()) {
-        MemRequest::sendReqWriteWarmup(gms->getDL1(), dinst->getAddr());
+        MemRequest::sendReqWriteWarmup(gms->getDL1(), dinst->getAddr(), dinst->getPC());
         dinst->scrap(eint);
         dinst = 0;
       }
@@ -305,7 +305,7 @@ void FetchEngine::realfetch(IBucket *bucket, EmulInterface *eint, FlowID fid, in
 
   if(enableICache && !bucket->empty()) {
     nFetched.add(FetchWidth - n2Fetch, bucket->top()->getStatsFlag());
-    MemRequest::sendReqRead(gms->getIL1(), bucket->top()->getStatsFlag(), bucket->top()->getPC(), &(bucket->markFetchedCB));
+    MemRequest::sendReqRead(gms->getIL1(), bucket->top()->getStatsFlag(), bucket->top()->getPC(), bucket->top()->getPC(), &(bucket->markFetchedCB));
   }else{
     bucket->markFetchedCB.schedule(IL1HitDelay);
 #if 0

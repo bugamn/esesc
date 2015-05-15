@@ -295,18 +295,18 @@ void MRouter::scheduleDisp(MemRequest *mreq, TimeDelta_t lat)
 }
 /* }}} */
 
-void MRouter::sendDirtyDisp(AddrType addr, bool doStats, TimeDelta_t lat)
+void MRouter::sendDirtyDisp(AddrType addr, AddrType pc, bool doStats, TimeDelta_t lat)
   /* schedule Displace (down) {{{1 */
 {
   I(down_node.size()==1);
-  MemRequest::sendDirtyDisp(down_node[0], self_mobj, addr, doStats);
+  MemRequest::sendDirtyDisp(down_node[0], self_mobj, addr, pc, doStats);
 }
 /* }}} */
-void MRouter::sendCleanDisp(AddrType addr, bool doStats, TimeDelta_t lat)
+void MRouter::sendCleanDisp(AddrType addr, AddrType pc, bool doStats, TimeDelta_t lat)
   /* schedule Displace (down) {{{1 */
 {
   I(down_node.size()==1);
-  MemRequest::sendCleanDisp(down_node[0], self_mobj, addr, doStats);
+  MemRequest::sendCleanDisp(down_node[0], self_mobj, addr, pc, doStats);
 }
 /* }}} */
 
@@ -335,7 +335,7 @@ int32_t MRouter::sendSetStateOthers(MemRequest *mreq, MsgAction ma, TimeDelta_t 
       I(0);
     }
 
-    MemRequest *breq = MemRequest::createSetState(self_mobj, mreq->getCreator(), ma, addr, doStats);
+    MemRequest *breq = MemRequest::createSetState(self_mobj, mreq->getCreator(), ma, addr, mreq->getPC(), doStats);
     breq->addPendingSetStateAck(mreq);
 
     breq->startSetState(up_node[i], lat);
@@ -361,7 +361,7 @@ int32_t MRouter::sendSetStateOthersPos(uint32_t pos, MemRequest *mreq, MsgAction
   }
 
 
-  MemRequest *breq = MemRequest::createSetState(self_mobj, mreq->getCreator(), ma, addr, doStats);
+  MemRequest *breq = MemRequest::createSetState(self_mobj, mreq->getCreator(), ma, addr, mreq->getPC(), doStats);
   breq->addPendingSetStateAck(mreq);
 
   breq->startSetState(up_node[pos], lat);
@@ -386,7 +386,7 @@ int32_t MRouter::sendSetStateAll(MemRequest *mreq, MsgAction ma, TimeDelta_t lat
   I(mreq->isSetState());
   int32_t conta = 0;
   for(size_t i=0;i<up_node.size();i++) {
-    MemRequest *breq = MemRequest::createSetState(self_mobj, mreq->getCreator(), ma, addr, doStats);
+    MemRequest *breq = MemRequest::createSetState(self_mobj, mreq->getCreator(), ma, addr, mreq->getPC(), doStats);
     breq->addPendingSetStateAck(mreq);
 
     breq->startSetState(up_node[i], lat);

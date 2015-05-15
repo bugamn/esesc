@@ -217,7 +217,7 @@ void CCache::displaceLine(AddrType naddr, MemRequest *mreq, Line *l)
 			}else if (l->getSharingCount() == 1) {
 				invOne.inc(doStats);
 
-				MemRequest *inv_req = MemRequest::createSetState(this, this, ma_setInvalid, naddr, doStats);
+				MemRequest *inv_req = MemRequest::createSetState(this, this, ma_setInvalid, naddr, mreq->getPC(), doStats);
         trackAddress(inv_req);
 				int32_t i = router->sendSetStateOthersPos(l->getFirstSharingPos(), inv_req, ma_setInvalid, inOrderUpMessage(1));
         if (i==0)
@@ -226,7 +226,7 @@ void CCache::displaceLine(AddrType naddr, MemRequest *mreq, Line *l)
         // FIXME: optimize directory for 2 or more
 				invAll.inc(doStats);
 
-				MemRequest *inv_req = MemRequest::createSetState(this, this, ma_setInvalid, naddr, doStats);
+				MemRequest *inv_req = MemRequest::createSetState(this, this, ma_setInvalid, naddr, mreq->getPC(), doStats);
         trackAddress(inv_req);
 				int32_t i = router->sendSetStateAll(inv_req, ma_setInvalid, inOrderUpMessage(1));
         if (i==0)
@@ -235,7 +235,7 @@ void CCache::displaceLine(AddrType naddr, MemRequest *mreq, Line *l)
 		}else{
 			invAll.inc(doStats);
 
-			MemRequest *inv_req = MemRequest::createSetState(this, this, ma_setInvalid, naddr, doStats);
+			MemRequest *inv_req = MemRequest::createSetState(this, this, ma_setInvalid, naddr, mreq->getPC(), doStats);
       int32_t i = router->sendSetStateAll(inv_req, ma_setInvalid, inOrderUpMessage(1));
 
       if (i==0)

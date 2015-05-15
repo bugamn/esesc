@@ -177,7 +177,8 @@ void MarkovPrefetcher::prefetch(AddrType prefAddr, Time_t lat)
 
   penFetchSet::iterator it = pendingFetches.find(paddr);
   if(it == pendingFetches.end()) {
-    MemRequest *mreq = MemRequest::createReqRead(this, paddr, false); // FIXME, not in the stats
+    // FIXME, no pc address
+    MemRequest *mreq = MemRequest::createReqRead(this, paddr, 0, false); // FIXME, not in the stats
     router->scheduleReqAckAbs(mreq, missDelay); //Send out the prefetch!
   }
 }

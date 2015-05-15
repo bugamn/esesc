@@ -153,7 +153,7 @@ void FUSCOORELoad::retryvpc(DInst *dinst)
 /* retry vpc request {{{1 */
 {
   if (!vpc->isBusy(dinst->getAddr())) {
-    MemRequest::sendReqRead(vpc, dinst->getStatsFlag(), dinst->getAddr(), executedCB::create(this, dinst)); 
+    MemRequest::sendReqRead(vpc, dinst->getStatsFlag(), dinst->getAddr(), dinst->getPC(), executedCB::create(this, dinst)); 
     return;
   }
 
@@ -366,7 +366,7 @@ bool FUSCOORELoad::preretire(DInst *dinst, bool flushing)
   if(DL1->isBusy(dinst->getAddr()))
     return false;
 
-  MemRequest::sendReqRead(DL1, dinst->getStatsFlag(), dinst->getAddr(), performedCB::create(this,dinst));
+  MemRequest::sendReqRead(DL1, dinst->getStatsFlag(), dinst->getAddr(), dinst->getPC(), performedCB::create(this,dinst));
 
   return true;
 }
@@ -463,9 +463,9 @@ void FUSCOOREStore::retryvpc(DInst *dinst)
   }
 
   if (dinst->getInst()->isStoreAddress()) {
-    MemRequest::sendReqWritePrefetch(vpc, dinst->getStatsFlag(), dinst->getAddr(), executedCB::create(this,dinst));
+    MemRequest::sendReqWritePrefetch(vpc, dinst->getStatsFlag(), dinst->getAddr(), dinst->getPC(), executedCB::create(this,dinst));
   }else{
-    MemRequest::sendReqWrite(vpc, dinst->getStatsFlag(), dinst->getAddr(), performedCB::create(this,dinst));
+    MemRequest::sendReqWrite(vpc, dinst->getStatsFlag(), dinst->getAddr(), dinst->getPC(), performedCB::create(this,dinst));
   }
 }
 /* }}} */
@@ -526,9 +526,9 @@ bool FUSCOOREStore::preretire(DInst *dinst, bool flushing)
 //  MemRequest::createVPCWriteUpdate(vpc, dinst); //no callback needed
 
 
-  MemRequest::sendReqWrite(vpc, dinst->getStatsFlag(), dinst->getAddr(), NULL);
+  MemRequest::sendReqWrite(vpc, dinst->getStatsFlag(), dinst->getAddr(), dinst->getPC(), NULL);
 
-  MemRequest::sendReqWrite(DL1, dinst->getStatsFlag(), dinst->getAddr(), performedCB::create(this,dinst));
+  MemRequest::sendReqWrite(DL1, dinst->getStatsFlag(), dinst->getAddr(), dinst->getPC(), performedCB::create(this,dinst));
 
   return true;
 }
@@ -643,7 +643,7 @@ void FULoad::cacheDispatched(DInst *dinst) {
   }
 
   //MSG("FULoad 0x%x 0x%x",dinst->getAddr(), dinst->getPC());
-  MemRequest::sendReqRead(DL1, dinst->getStatsFlag(), dinst->getAddr(), performedCB::create(this,dinst));
+  MemRequest::sendReqRead(DL1, dinst->getStatsFlag(), dinst->getAddr(), dinst->getPC(), performedCB::create(this,dinst));
 }
 /* }}} */
 
@@ -787,7 +787,7 @@ bool FUStore::preretire(DInst *dinst, bool flushing) {
     return false;
   }
 
-  MemRequest::sendReqWrite(DL1, dinst->getStatsFlag(), dinst->getAddr(), performedCB::create(this,dinst));
+  MemRequest::sendReqWrite(DL1, dinst->getStatsFlag(), dinst->getAddr(), dinst->getPC(), performedCB::create(this,dinst));
 
   return true;
 }
@@ -1143,7 +1143,7 @@ void FULoad_noMemSpec::cacheDispatched(DInst *dinst) {
   }
 
   //MSG("\nFULoad_noMemSpec 0x%llx 0x%llx",dinst->getAddr(), dinst->getPC());
-  MemRequest::sendReqRead(DL1, dinst->getStatsFlag(), dinst->getAddr(), performedCB::create(this,dinst));
+  MemRequest::sendReqRead(DL1, dinst->getStatsFlag(), dinst->getAddr(), dinst->getPC(), performedCB::create(this,dinst));
 }
 /* }}} */
 
@@ -1215,7 +1215,7 @@ void FUStore_noMemSpec::executing(DInst *dinst) {
   gen->nextSlot(dinst->getStatsFlag());
 
   if (dinst->getInst()->isStoreAddress()) {
-    MemRequest::sendReqWritePrefetch(DL1, dinst->getStatsFlag(), dinst->getAddr(), executedCB::create(this,dinst));
+    MemRequest::sendReqWritePrefetch(DL1, dinst->getStatsFlag(), dinst->getAddr(), dinst->getPC(), executedCB::create(this,dinst));
   }else{
     executed(dinst);
   }
@@ -1256,7 +1256,7 @@ bool FUStore_noMemSpec::preretire(DInst *dinst, bool flushing) {
     return false;
   }
 
-  MemRequest::sendReqWrite(DL1, dinst->getStatsFlag(), dinst->getAddr(), performedCB::create(this,dinst));
+  MemRequest::sendReqWrite(DL1, dinst->getStatsFlag(), dinst->getAddr(), dinst->getPC(), performedCB::create(this,dinst));
 
   return true;
 }
