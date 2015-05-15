@@ -258,6 +258,8 @@ protected:
   Line **content;
   uint16_t irand;
   ReplacementPolicy policy;
+  // predictor
+  //Predictor *predictor;
 
   friend class CacheGeneric<State, Addr_t>;
   CacheAssoc(int32_t size, int32_t assoc, int32_t blksize, int32_t addrUnit, const char *pStr, bool xr);
@@ -457,6 +459,7 @@ class StateGeneric {
 private:
   Addr_t tag;
   Addr_t pc;
+  bool dead;
 
 public:
   virtual ~StateGeneric() {
@@ -473,6 +476,8 @@ public:
      I(a);
      pc = a;
  }
+ void setDead(bool b) { dead = b; };
+ void isDead() { return dead; }
  void clearTag() { tag = 0; }
  void clearPC() { pc = 0; }
  void initialize(void *c) { 
