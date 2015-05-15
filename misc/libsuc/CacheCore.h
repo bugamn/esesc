@@ -456,10 +456,12 @@ template<class Addr_t>
 class StateGeneric {
 private:
   Addr_t tag;
+  Addr_t pc;
 
 public:
   virtual ~StateGeneric() {
     tag = 0;
+    pc = 0;
   }
  
  Addr_t getTag() const { return tag; }
@@ -467,9 +469,15 @@ public:
    I(a);
    tag = a; 
  }
+ void setPC(Addr_t a) {
+     I(a);
+     pc = a;
+ }
  void clearTag() { tag = 0; }
+ void clearPC() { pc = 0; }
  void initialize(void *c) { 
    clearTag(); 
+   clearPC();
  }
 
  virtual bool isValid() const { return tag; }
