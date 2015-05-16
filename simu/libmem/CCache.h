@@ -253,31 +253,31 @@ public:
 	void setNeedsCoherence();
 	void clearNeedsCoherence();
 
- 	bool Modified(AddrType addr) const {
-		Line *cl = cacheBank->readLine(addr);
+ 	bool Modified(AddrType addr, AddrType pc) const {
+		Line *cl = cacheBank->readLine(addr, pc);
     if (cl !=0)
       return cl->isModified();
 
     return false;
 	}
 
-	bool Exclusive(AddrType addr) const {
-		Line *cl = cacheBank->readLine(addr);
+	bool Exclusive(AddrType addr, AddrType pc) const {
+		Line *cl = cacheBank->readLine(addr, pc);
     if(cl!=0)
       return cl->isExclusive();
 
     return false;
 	}
 
-	bool Shared(AddrType addr) const {
-		Line *cl = cacheBank->readLine(addr);
+	bool Shared(AddrType addr, AddrType pc) const {
+		Line *cl = cacheBank->readLine(addr, pc);
     if(cl!=0)
       return cl->isShared();
     return false;
 	}
 
-	bool Invalid(AddrType addr) const {
-		Line *cl = cacheBank->readLine(addr);
+	bool Invalid(AddrType addr, AddrType pc) const {
+		Line *cl = cacheBank->readLine(addr, pc);
     if (cl==0)
       return true;
     return cl->isInvalid();

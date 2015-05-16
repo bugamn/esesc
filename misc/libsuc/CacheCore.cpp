@@ -216,7 +216,7 @@ CacheAssoc<State, Addr_t>::CacheAssoc(int32_t size, int32_t assoc, int32_t blksi
 }
 
 template<class State, class Addr_t>
-typename CacheAssoc<State, Addr_t>::Line *CacheAssoc<State, Addr_t>::findLinePrivate(Addr_t addr, bool updateSHIP, Addr_t SHIP_signature)
+typename CacheAssoc<State, Addr_t>::Line *CacheAssoc<State, Addr_t>::findLinePrivate(Addr_t addr, Addr_t pc, bool updateSHIP, Addr_t SHIP_signature)
 {
   Addr_t tag = this->calcTag(addr);
 
@@ -266,7 +266,7 @@ typename CacheAssoc<State, Addr_t>::Line *CacheAssoc<State, Addr_t>::findLinePri
 
 template<class State, class Addr_t>
 typename CacheAssoc<State, Addr_t>::Line 
-*CacheAssoc<State, Addr_t>::findLine2Replace(Addr_t addr, bool updateSHIP, Addr_t SHIP_signature)
+*CacheAssoc<State, Addr_t>::findLine2Replace(Addr_t addr, Addr_t pc, bool updateSHIP, Addr_t SHIP_signature)
 { 
   Addr_t tag    = this->calcTag(addr);
   I(tag);
@@ -374,7 +374,7 @@ CacheDM<State, Addr_t>::CacheDM(int32_t size, int32_t blksize, int32_t addrUnit,
 }
 
 template<class State, class Addr_t>
-typename CacheDM<State, Addr_t>::Line *CacheDM<State, Addr_t>::findLinePrivate(Addr_t addr, bool updateSHIP, Addr_t SHIP_signature)
+typename CacheDM<State, Addr_t>::Line *CacheDM<State, Addr_t>::findLinePrivate(Addr_t addr, Addr_t pc, bool updateSHIP, Addr_t SHIP_signature)
 {
   Addr_t tag = this->calcTag(addr);
   I(tag);
@@ -391,7 +391,7 @@ typename CacheDM<State, Addr_t>::Line *CacheDM<State, Addr_t>::findLinePrivate(A
 
 template<class State, class Addr_t>
 typename CacheDM<State, Addr_t>::Line 
-*CacheDM<State, Addr_t>::findLine2Replace(Addr_t addr, bool updateSHIP, Addr_t SHIP_signature)
+*CacheDM<State, Addr_t>::findLine2Replace(Addr_t addr, Addr_t pc, bool updateSHIP, Addr_t SHIP_signature)
 { 
   Addr_t tag = this->calcTag(addr);
   Line *line = content[this->calcIndex4Tag(tag)];
@@ -423,7 +423,7 @@ CacheDMSkew<State, Addr_t>::CacheDMSkew(int32_t size, int32_t blksize, int32_t a
 }
 
 template<class State, class Addr_t>
-typename CacheDMSkew<State, Addr_t>::Line *CacheDMSkew<State, Addr_t>::findLinePrivate(Addr_t addr, bool updateSHIP, Addr_t SHIP_signature)
+typename CacheDMSkew<State, Addr_t>::Line *CacheDMSkew<State, Addr_t>::findLinePrivate(Addr_t addr, Addr_t pc, bool updateSHIP, Addr_t SHIP_signature)
 {
   Addr_t tag1 = this->calcTag(addr);
   I(tag1);
@@ -475,7 +475,7 @@ typename CacheDMSkew<State, Addr_t>::Line *CacheDMSkew<State, Addr_t>::findLineP
 
 template<class State, class Addr_t>
 typename CacheDMSkew<State, Addr_t>::Line 
-*CacheDMSkew<State, Addr_t>::findLine2Replace(Addr_t addr, bool updateSHIP, Addr_t SHIP_signature)
+*CacheDMSkew<State, Addr_t>::findLine2Replace(Addr_t addr, Addr_t pc, bool updateSHIP, Addr_t SHIP_signature)
 { 
   Addr_t tag1 = this->calcTag(addr);
   Line *line1 = content[this->calcIndex4Tag(tag1)];
@@ -595,7 +595,7 @@ CacheSHIP<State, Addr_t>::CacheSHIP(int32_t size, int32_t assoc, int32_t blksize
 }
 
 template<class State, class Addr_t>
-typename CacheSHIP<State, Addr_t>::Line *CacheSHIP<State, Addr_t>::findLinePrivate(Addr_t addr, bool updateSHIP, Addr_t SHIP_signature)
+typename CacheSHIP<State, Addr_t>::Line *CacheSHIP<State, Addr_t>::findLinePrivate(Addr_t addr, Addr_t pc, bool updateSHIP, Addr_t SHIP_signature)
 {
   Addr_t tag = this->calcTag(addr);
   Line **theSet = &content[this->calcIndex4Tag(tag)];
@@ -652,7 +652,7 @@ typename CacheSHIP<State, Addr_t>::Line *CacheSHIP<State, Addr_t>::findLinePriva
 
 template<class State, class Addr_t>
 typename CacheSHIP<State, Addr_t>::Line 
-*CacheSHIP<State, Addr_t>::findLine2Replace(Addr_t addr, bool updateSHIP, Addr_t SHIP_signature)
+*CacheSHIP<State, Addr_t>::findLine2Replace(Addr_t addr, Addr_t pc, bool updateSHIP, Addr_t SHIP_signature)
 { 
   if (updateSHIP == false){
     //MSG("Calling a CacheSHIP function with update disabled");

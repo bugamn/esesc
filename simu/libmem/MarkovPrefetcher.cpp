@@ -172,7 +172,7 @@ void MarkovPrefetcher::prefetch(AddrType prefAddr, Time_t lat)
 {
   uint32_t paddr = prefAddr & defaultMask;
 
-  if(buff->readLine(paddr))
+  if(buff->readLine(paddr, paddr))
     return;
 
   penFetchSet::iterator it = pendingFetches.find(paddr);

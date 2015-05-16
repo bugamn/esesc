@@ -100,10 +100,10 @@ void TLB::doReq(MemRequest *mreq)
 #ifdef TLB_ALWAYS_HITS
   bool l = true;
 #else
-  Line *l = tlbBank->readLine(mreq->getAddr());
+  Line *l = tlbBank->readLine(mreq->getAddr(), mreq->getPC());
 #endif
   if (l==0 && mreq->isWarmup()) {
-    l = tlbBank->fillLine(mreq->getAddr());
+    l = tlbBank->fillLine(mreq->getAddr(), mreq->getPC());
     if (lowerTLB) {
       lowerTLB->ffread(mreq->getAddr()); // Fill the L2 too
     }
@@ -128,7 +128,7 @@ void TLB::doReq(MemRequest *mreq)
     //Check the lowerTLB for a miss. 
     if (lowerTLB->checkL2TLBHit(mreq) == true){
 
-      tlbBank->fillLine(mreq->getAddr());
+      tlbBank->fillLine(mreq->getAddr(), mreq->getPC());
       tlblowerReadHit.inc(mreq->getStatsFlag());
 
       router->scheduleReq(mreq, lowerTLBdelay);
@@ -252,7 +252,7 @@ void TLB::wakeupNext()
 
 void TLB::readPage3(MemRequest *mreq) 
 {
-  tlbBank->fillLine(mreq->getAddr());
+  tlbBank->fillLine(mreq->getAddr(), mreq->getPC());
   TimeDelta_t lat = 0;
   if (lowerTLB)
     lat += lowerTLB->ffread(mreq->getAddr()); // Fill the L2 too
@@ -270,13 +270,13 @@ void TLB::readPage3(MemRequest *mreq)
 TimeDelta_t TLB::ffread(AddrType addr)
   // {{{1 rabbit read
 { 
-  if (tlbBank->readLine(addr))
+  if (tlbBank->readLine(addr, addr))
     return delay;   // done!
 
   if (lowerTLB)
     lowerTLB->ffread(addr);
  
-  tlbBank->fillLine(addr);
+  tlbBank->fillLine(addr, addr);
   if (lowerCache)
     return router->ffread(addr) + lowerTLBdelay;
   return delay;
@@ -286,13 +286,13 @@ TimeDelta_t TLB::ffread(AddrType addr)
 TimeDelta_t TLB::ffwrite(AddrType addr)
   // {{{1 rabbit write
 { 
-  if (tlbBank->readLine(addr))
+  if (tlbBank->readLine(addr, addr))
     return delay;   // done!
 
   if (lowerTLB)
     lowerTLB->ffwrite(addr);
  
-  tlbBank->fillLine(addr);
+  tlbBank->fillLine(addr, addr);
   if (lowerCache)
     return router->ffwrite(addr) + delay;
   return delay;
@@ -303,7 +303,7 @@ bool TLB::checkL2TLBHit(MemRequest *mreq)
 // {{{1 TLB direct requests  
 {
   AddrType addr = mreq->getAddr();
-  Line *l = tlbBank->readLine(addr);
+  Line *l = tlbBank->readLine(addr, mreq->getPC());
   if (l) {
     return true;
   }

@@ -167,7 +167,7 @@ void BPBTB::updateOnly(DInst *dinst)
 
   uint32_t key   = calcHist(dinst->getPC());
 
-  BTBCache::CacheLine *cl = data->fillLine(key);
+  BTBCache::CacheLine *cl = data->fillLine(key, dinst->getPC());
   I( cl );
   
   cl->inst = dinst->getAddr();
@@ -193,7 +193,7 @@ PredType BPBTB::predict(DInst *dinst, bool doUpdate)
 
   if ( ntaken || !doUpdate ) {
     // The branch is not taken. Do not update the cache
-    BTBCache::CacheLine *cl = data->readLine(key);
+    BTBCache::CacheLine *cl = data->readLine(key, dinst->getPC());
 
     if( cl == 0 ) {
       nMiss.inc(doUpdate && dinst->getStatsFlag());
@@ -213,7 +213,7 @@ PredType BPBTB::predict(DInst *dinst, bool doUpdate)
 
   // The branch is taken. Update the cache
 
-  BTBCache::CacheLine *cl = data->fillLine(key);
+  BTBCache::CacheLine *cl = data->fillLine(key, dinst->getPC());
   I( cl );
   
   AddrType predictID = cl->inst;

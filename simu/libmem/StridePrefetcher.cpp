@@ -125,7 +125,7 @@ void StridePrefetcher::doReq(MemRequest *mreq)
   TimeDelta_t when = cmdPort->nextSlotDelta(mreq->getStatsFlag())+delay;
 
   uint32_t paddr = mreq->getAddr();
-  bLine *l = buff->readLine(paddr);
+  bLine *l = buff->readLine(paddr, mreq->getPC());
 
   if(l) { //hit
     hit.inc(mreq->getStatsFlag()); //increment counter
@@ -165,7 +165,7 @@ void StridePrefetcher::doSetState(MemRequest *mreq)
 void StridePrefetcher::doSetStateAck(MemRequest *mreq)
   /* forward set state to all the upper nodes {{{1 */
 {
-  bLine *b = buff->readLine(mreq->getAddr());
+  bLine *b = buff->readLine(mreq->getAddr(), mreq->getPC());
   if (b)
     b->invalidate();
 
@@ -197,7 +197,7 @@ TimeDelta_t StridePrefetcher::ffwrite(AddrType addr)
 void StridePrefetcher::ifHit(MemRequest *mreq)
   /* forward StridePrefetcher read {{{1 */
 {
-  bLine *l = buff->readLine(mreq->getAddr());
+  bLine *l = buff->readLine(mreq->getAddr(), mreq->getPC());
 
   if(l) { 
     hit.inc(mreq->getStatsFlag());
@@ -271,14 +271,14 @@ void StridePrefetcher::learnMiss(AddrType addr) {
 
   AddrType nextAddr = goingUp ? paddr + newStride : paddr - newStride;
 
-  if(!table->readLine(nextAddr) && !table->readLine(paddr)) {
-    pEntry *pe = table->fillLine(paddr);
+  if(!table->readLine(nextAddr, paddr) && !table->readLine(paddr, paddr)) {
+    pEntry *pe = table->fillLine(paddr, paddr);
     pe->stride = newStride;
     pe->goingUp = goingUp;
   }
 
   paddr = nextAddr & defaultMask;
-  bLine *l = buff->readLine(paddr);
+  bLine *l = buff->readLine(paddr, paddr);
   if (l==0) {
     pendingFetches.insert(paddr);
   }

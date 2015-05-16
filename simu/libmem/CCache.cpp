@@ -618,7 +618,7 @@ void CCache::doReq(MemRequest *mreq)
     mshr->blockEntry(addr,mreq);
   }
 
-  Line *l = cacheBank->readLine(addr);
+  Line *l = cacheBank->readLine(addr, mreq->getPC());
   if (l == 0) {
     MTRACE("doReq cache miss");
 		mustForwardReqDown(mreq, true);
@@ -694,7 +694,7 @@ void CCache::doDisp(MemRequest *mreq)
 
   AddrType addr = mreq->getAddr();
 
-  Line *l=cacheBank->readLine(addr);
+  Line *l=cacheBank->readLine(addr, mreq->getPC());
   if (l) {
     int16_t portid = router->getCreatorPort(mreq);
     l->adjustState(mreq,portid);
@@ -718,7 +718,7 @@ void CCache::doReqAck(MemRequest *mreq)
   mreq->recoverReqAction();
 
   AddrType addr = mreq->getAddr();
-  Line *l = cacheBank->readLine(addr);
+  Line *l = cacheBank->readLine(addr, mreq->getPC());
   // It could be l!=0 if we requested a check in the lower levels to change state.
   if (l == 0) {
     MTRACE("doReqAck allocatingline");
@@ -780,7 +780,7 @@ void CCache::doSetState(MemRequest *mreq)
     return;
   }
 
-  Line *l = cacheBank->readLine(mreq->getAddr());
+  Line *l = cacheBank->readLine(mreq->getAddr(), mreq->getPC());
   if (l==0) {
 		// Done!
 		mreq->convert2SetStateAck(ma_setInvalid, false);
@@ -831,7 +831,7 @@ void CCache::doSetStateAck(MemRequest *mreq)
 {
   trackAddress(mreq);
 
-  Line *l = cacheBank->readLine(mreq->getAddr());
+  Line *l = cacheBank->readLine(mreq->getAddr(), mreq->getPC());
   if (l) {
     bool needsDisp = l->needsDisp();
     int16_t portid = router->getCreatorPort(mreq);
@@ -942,7 +942,7 @@ TimeDelta_t CCache::ffread(AddrType addr)
 {
   AddrType addr_r=0;
 
-  Line *l = cacheBank->readLine(addr);
+  Line *l = cacheBank->readLine(addr, addr);
   if (l)
     return 1;   // done!
 
@@ -958,7 +958,7 @@ TimeDelta_t CCache::ffwrite(AddrType addr)
 {
   AddrType addr_r=0;
 
-  Line *l = cacheBank->writeLine(addr);
+  Line *l = cacheBank->writeLine(addr, addr);
   if (l) {
   }else{
 		l = cacheBank->fillLine(addr, addr_r);
